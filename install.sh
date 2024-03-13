@@ -1,37 +1,32 @@
 #!/bin/bash
 
-# 安装脚本的名称
+# Installation script name
 SCRIPT_NAME="git-user.sh"
 
-# 目标目录
+# Target directory
 TARGET_DIR="/usr/local/bin"
 
-# 目标命令的名称
+# Target command name
 TARGET_CMD="git-user"
 
-# 检查 git-user.sh 脚本是否存在于当前目录中
+# Check if the git-user.sh script exists in the current directory
 if [ ! -f "$SCRIPT_NAME" ]; then
-    echo "错误：$SCRIPT_NAME 不存在于当前目录中。"
+    echo "Error: $SCRIPT_NAME does not exist in the current directory."
     exit 1
 fi
 
-# 给予脚本执行权限
-chmod +x "$SCRIPT_NAME"
+# Grant script execution permission
+chmod +x "$SCRIPT_NAME" || { echo "Failed to set executable permission for $SCRIPT_NAME."; exit 1; }
 
-# 将脚本移动到 /usr/local/bin
-if [ -w "$TARGET_DIR" ] || [ -w "$TARGET_DIR/$TARGET_CMD" ]; then
-    # 直接移动并重命名脚本
-    mv "$SCRIPT_NAME" "$TARGET_DIR/$TARGET_CMD"
-    echo "$TARGET_CMD 已成功安装到 $TARGET_DIR。"
-else
-    # 如果目标目录不可写，尝试使用 sudo
-    echo "尝试使用 sudo 权限安装到 $TARGET_DIR..."
-    sudo mv "$SCRIPT_NAME" "$TARGET_DIR/$TARGET_CMD" && echo "$TARGET_CMD 已成功安装到 $TARGET_DIR。"
-fi
+# Inform the user that sudo permission may be needed
+echo "Installing $TARGET_CMD to $TARGET_DIR. You may need to enter your password to grant permission."
 
-# 检查是否成功安装
+# Copy the script to /usr/local/bin using sudo
+sudo cp "$SCRIPT_NAME" "$TARGET_DIR/$TARGET_CMD" || { echo "Failed to install $TARGET_CMD to $TARGET_DIR."; exit 1; }
+
+# Check if successfully installed
 if [ -f "$TARGET_DIR/$TARGET_CMD" ]; then
-    echo "安装成功。你现在可以在任何地方通过命令 '$TARGET_CMD' 来使用 git-user 了。"
+    echo "Installation successful. You can now use '$TARGET_CMD' command anywhere."
 else
-    echo "安装失败。"
+    echo "Installation failed."
 fi
