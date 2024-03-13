@@ -104,8 +104,32 @@ switch_user_info() {
     echo "Switched to profile: Alias: $alias, Name: $name, Email: $email."
 }
 
+show_help() {
+    echo "Usage: git-user [COMMAND] [--global]"
+    echo ""
+    echo "A tool to manage Git user and email information."
+    echo ""
+    echo "Commands:"
+    echo "  set [--global]              Set user info for the current directory or globally."
+    echo "  show                        Show the current user info."
+    echo "  add                         Interactively add a new user profile with a unique alias."
+    echo "  delete                      Interactively delete an existing user profile."
+    echo "  switch                      Interactively switch between user profiles."
+    echo "  list                        List all available user profiles with the current one highlighted."
+    echo "  --help                      Show this help message and exit."
+    echo ""
+    echo "Examples:"
+    echo "  git-user set --global       Set global Git user name and email."
+    echo "  git-user switch             Interactively switch to another Git user profile."
+    echo "  git-user add                Add a new Git user profile."
+    echo "  git-user list               List all Git user profiles."
+}
+
 # Main program
 case "$1" in
+    --help|-h)
+        show_help
+        ;;
     set)
         set_user_info "$2"
         ;;
@@ -128,7 +152,7 @@ case "$1" in
         list_profiles
         ;;
     *)
-        echo "Usage: git-user [set [--global] | show | add | delete | switch <alias> | list]"
+        echo "Invalid command. Use --help or -h for usage information."
         exit 1
         ;;
 esac
