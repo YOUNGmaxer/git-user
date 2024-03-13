@@ -7,7 +7,7 @@ SCRIPT_NAME="git-user.sh"
 TARGET_DIR="/usr/local/bin"
 
 # Target command name
-TARGET_CMD="git-user"
+TARGET_CMD="gu"
 
 # Check if the git-user.sh script exists in the current directory
 if [ ! -f "$SCRIPT_NAME" ]; then

@@ -1,12 +1,12 @@
-# git-user
+# gu（git-user）
 
 English | [中文](./README.zh-CN.md)
 
-`git-user` is a command-line tool for managing multiple Git user profiles on a single machine, facilitating the switching of user information between personal and work projects.
+`gu` is a command-line tool for managing multiple Git user profiles on a single machine, facilitating the switching of user information between personal and work projects.
 
 ## Installation
 
-Run the following commands to install `git-user`:
+Run the following commands to install `gu`:
 
 ```bash
 git clone https://github.com/YOUNGmaxer/git-user.git
@@ -18,21 +18,21 @@ sh ./install.sh
 
 ### Set User Information
 
-- For the current directory: `git-user set`
-- Globally: `git-user set --global`
+- For the current directory: `gu set`
+- Globally: `gu set --global`
 
 ### Show Current User
 
 ```bash
-git-user show
+gu show
 ```
 
 ### Add/Delete User Profiles
 
-- To add: `git-user add` and follow the prompts.
-- To delete: `git-user delete` and select the profile to be deleted.
+- To add: `gu add` and follow the prompts.
+- To delete: `gu delete` and select the profile to be deleted.
 
 ### Switch/List User Profiles
 
-- To switch: `git-user switch` and select a profile.
-- To list: `git-user list`
+- To switch: `gu switch` and select a profile.
+- To list: `gu list`
