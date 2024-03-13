@@ -5,7 +5,7 @@
 CONFIG_FILE="$HOME/.git_user_profiles"
 
 highlight_text() {
-    echo "\033[1;32m$1\033[0m" # Green color and bold
+    echo "$(tput setaf 2)$(tput bold)$1$(tput sgr0)"
 }
 
 set_user_info() {
