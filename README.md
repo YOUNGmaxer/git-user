@@ -18,7 +18,7 @@ To install `git-user`, clone this repository and run the installation script:
 ```bash
 git clone https://github.com/yourusername/git-user.git
 cd git-user
-./install.sh
+sh ./install.sh
 ```
 
 This will install `git-user` to `/usr/local/bin`, making it accessible globally. Make sure you have the necessary permissions or you might need to run the script with `sudo`.
