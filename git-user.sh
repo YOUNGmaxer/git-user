@@ -4,6 +4,10 @@
 
 CONFIG_FILE="$HOME/.git_user_profiles"
 
+highlight_text() {
+    echo "\033[1;32m$1\033[0m" # Green color and bold
+}
+
 set_user_info() {
     local scope="local"
     if [[ "$1" == "--global" ]]; then
@@ -65,18 +69,35 @@ delete_user_profile() {
 }
 
 switch_user_info() {
-    local alias="$1"
-    local profile
-    profile=$(grep "^$alias " "$CONFIG_FILE")
-    if [ -z "$profile" ]; then
-        echo "Profile '$alias' not found."
+    local current_name=$(git config user.name)
+    local current_email=$(git config user.email)
+    
+    echo "Available profiles:"
+    local i=1
+    local choices=()
+    while IFS=' ' read -r alias name email; do
+        choices[i]="$alias"
+        local display_info="Alias: $alias, Name: $name, Email: $email"
+        if [[ "$name" == "$current_name" ]] && [[ "$email" == "$current_email" ]]; then
+            display_info=$(highlight_text "$display_info (Current)")
+        fi
+        echo "$i) $display_info"
+        ((i++))
+    done < "$CONFIG_FILE"
+
+    read -p "Choose a profile to switch [1-${#choices[@]}]: " choice
+    if ! [[ $choice =~ ^[0-9]+$ ]] || [ "$choice" -lt 1 ] || [ "$choice" -gt "${#choices[@]}" ]; then
+        echo "Invalid selection."
         return
     fi
 
+    local toSwitch="${choices[$choice]}"
+    local profile
+    profile=$(grep "^$toSwitch " "$CONFIG_FILE")
     IFS=' ' read -r alias name email <<< "$profile"
-    echo "Switching to profile '$alias' with Name: $name, Email: $email."
     git config user.name "$name"
     git config user.email "$email"
+    echo "Switched to profile '$alias' with Name: $name, Email: $email."
 }
 
 list_profiles() {
