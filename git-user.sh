@@ -10,9 +10,17 @@ set_user_info() {
         scope="global"
         shift
     fi
-    git config --$scope user.name "$1"
-    git config --$scope user.email "$2"
-    echo "User information set to Name: $1, Email: $2 (Scope: $scope)"
+
+    read -p "Enter user name: " name
+    read -p "Enter email: " email
+    read -p "Enter alias (default: $name): " alias
+    alias=${alias:-$name}
+
+    git config --$scope user.name "$name"
+    git config --$scope user.email "$email"
+    echo "User information set to Name: $name, Email: $email (Scope: $scope)"
+
+    add_user_profile "$alias" "$name" "$email"
 }
 
 show_user_info() {
@@ -22,24 +30,53 @@ show_user_info() {
 }
 
 add_user_profile() {
-    echo "$1 $2 $3" >> "$CONFIG_FILE"
-    echo "Added profile '$1' with Name: $2, Email: $3"
+    local alias="$1"
+    local name="$2"
+    local email="$3"
+
+    if grep -q "^$alias " "$CONFIG_FILE"; then
+        echo "Profile '$alias' already exists."
+        return
+    fi
+
+    echo "$alias $name $email" >> "$CONFIG_FILE"
+    echo "Added profile '$alias' with Name: $name, Email: $email"
+}
+
+delete_user_profile() {
+    echo "Available profiles:"
+    local i=1
+    local choices=()
+    while IFS=' ' read -r alias name email; do
+        choices[i]="$alias $name $email"
+        echo "$i) Alias: $alias, Name: $name, Email: $email"
+        ((i++))
+    done < "$CONFIG_FILE"
+
+    read -p "Choose a profile to delete [1-${#choices[@]}]: " choice
+    if ! [[ $choice =~ ^[0-9]+$ ]] || [ "$choice" -lt 1 ] || [ "$choice" -gt "${#choices[@]}" ]; then
+        echo "Invalid selection."
+        return
+    fi
+
+    local toDelete="${choices[$choice]}"
+    grep -v "^$toDelete" "$CONFIG_FILE" > "$CONFIG_FILE.tmp" && mv "$CONFIG_FILE.tmp" "$CONFIG_FILE"
+    echo "Deleted profile '${toDelete%% *}'."
 }
 
 switch_user_info() {
-    if [ ! -f "$CONFIG_FILE" ]; then
-        echo "No user profiles found. Please add a profile using 'git-user add <alias> <name> <email>'."
-        exit 1
-    fi
-
-    profile=$(grep "^$1 " "$CONFIG_FILE")
+    local alias="$1"
+    local profile
+    profile=$(grep "^$alias " "$CONFIG_FILE")
     if [ -z "$profile" ]; then
-        echo "Profile '$1' not found in $CONFIG_FILE."
-        exit 1
+        echo "Profile '$alias' not found."
+        return
     fi
 
     IFS=' ' read -r alias name email <<< "$profile"
-    set_user_info "$name" "$email"
+    echo "Switching to profile '$alias' with Name: $name, Email: $email."
+    git config user.name "$name"
+    git config user.email "$email"
 }
 
 list_profiles() {
@@ -57,13 +94,19 @@ list_profiles() {
 # Main program
 case "$1" in
     set)
-        set_user_info "$2" "$3" "$4"
+        set_user_info "$2"
         ;;
     show)
         show_user_info
         ;;
     add)
-        add_user_profile "$2" "$3" "$4"
+        read -p "Enter user name: " name
+        read -p "Enter email: " email
+        read -p "Enter alias: " alias
+        add_user_profile "$alias" "$name" "$email"
+        ;;
+    delete)
+        delete_user_profile
         ;;
     switch)
         switch_user_info "$2"
@@ -72,7 +115,7 @@ case "$1" in
         list_profiles
         ;;
     *)
-        echo "Usage: git-user [set [--global] <name> <email> | show | add <alias> <name> <email> | switch <alias> | list]"
+        echo "Usage: git-user [set [--global] | show | add | delete | switch <alias> | list]"
         exit 1
         ;;
 esac
