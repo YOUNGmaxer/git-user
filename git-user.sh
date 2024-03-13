@@ -58,7 +58,7 @@ list_profiles() {
         local display_info="$i) Alias: $alias, Name: $name, Email: $email"
         if [[ "$name" == "$current_name" ]] && [[ "$email" == "$current_email" ]]; then
             display_info+=" (Current)"
-            echo "$(highlight_text "$display_info")"
+            echo $(highlight_text "$display_info")
         else
             echo "$display_info"
         fi
