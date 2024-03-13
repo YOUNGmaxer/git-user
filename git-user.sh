@@ -47,57 +47,61 @@ add_user_profile() {
     echo "Added profile '$alias' with Name: $name, Email: $email"
 }
 
-show_profiles_with_highlight() {
+# Function to list profiles and highlight the current user
+list_profiles() {
     local current_name=$(git config user.name)
     local current_email=$(git config user.email)
-    local action="${1:-list}"  # 默认动作是list，可以通过参数指定其他动作
-
+    
     echo "Available profiles:"
     local i=1
-    local choices=()
     while IFS=' ' read -r alias name email; do
-        local display_info="Alias: $alias, Name: $name, Email: $email"
-        choices[i]="$alias $name $email"
-
+        local display_info="$i) Alias: $alias, Name: $name, Email: $email"
         if [[ "$name" == "$current_name" ]] && [[ "$email" == "$current_email" ]]; then
-            display_info=$(highlight_text "$display_info (Current)")
+            display_info+=" (Current)"
+            echo "$(highlight_text "$display_info")"
+        else
+            echo "$display_info"
         fi
-
-        echo "$i) $display_info"
         ((i++))
     done < "$CONFIG_FILE"
-
-    if [[ "$action" == "delete" || "$action" == "switch" ]]; then
-        read -p "Choose a profile to $action [1-${#choices[@]}]: " choice
-        if ! [[ $choice =~ ^[0-9]+$ ]] || [ "$choice" -lt 1 ] || [ "$choice" -gt "${#choices[@]}" ]; then
-            echo "Invalid selection."
-            return
-        fi
-
-        if [[ "$action" == "delete" ]]; then
-            local toDelete="${choices[$choice]}"
-            grep -v "^$toDelete" "$CONFIG_FILE" > "$CONFIG_FILE.tmp" && mv "$CONFIG_FILE.tmp" "$CONFIG_FILE"
-            echo "Deleted profile '${toDelete%% *}'."
-        elif [[ "$action" == "switch" ]]; then
-            local toSwitch="${choices[$choice]}"
-            IFS=' ' read -r alias name email <<< "$toSwitch"
-            git config user.name "$name"
-            git config user.email "$email"
-            echo "Switched to profile '$alias' with Name: $name, Email: $email."
-        fi
-    fi
 }
 
+# Interactive function to delete a profile
 delete_user_profile() {
-    show_profiles_with_highlight "delete"
+    list_profiles
+    local profiles=($(awk '{print $1}' "$CONFIG_FILE"))
+    
+    read -p "Enter the number of the profile to delete: " choice
+    local valid_choice_regex='^[0-9]+$'
+    if ! [[ $choice =~ $valid_choice_regex ]] || [ "$choice" -lt 1 ] || [ "$choice" -gt "${#profiles[@]}" ]; then
+        echo "Invalid selection."
+        return
+    fi
+
+    # Construct the pattern to avoid partial matches
+    local profile_to_delete="${profiles[$choice-1]}"
+    sed -i "/^$profile_to_delete /d" "$CONFIG_FILE"
+    echo "Profile deleted."
 }
 
+# Interactive function to switch the current user profile
 switch_user_info() {
-    show_profiles_with_highlight "switch"
-}
+    list_profiles
+    local profiles=($(awk '{print $1}' "$CONFIG_FILE"))
+    
+    read -p "Enter the number of the profile to switch to: " choice
+    local valid_choice_regex='^[0-9]+$'
+    if ! [[ $choice =~ $valid_choice_regex ]] || [ "$choice" -lt 1 ] || [ "$choice" -gt "${#profiles[@]}" ]; then
+        echo "Invalid selection."
+        return
+    fi
 
-list_profiles() {
-    show_profiles_with_highlight
+    local selected_alias="${profiles[$choice-1]}"
+    local selected_profile=$(grep "^$selected_alias " "$CONFIG_FILE")
+    IFS=' ' read -r alias name email <<< "$selected_profile"
+    git config user.name "$name"
+    git config user.email "$email"
+    echo "Switched to profile: Alias: $alias, Name: $name, Email: $email."
 }
 
 # Main program
