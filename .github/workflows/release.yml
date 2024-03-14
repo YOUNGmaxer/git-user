@@ -31,7 +31,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref_name }}
-          body: "Description of the release"
+          release_name: ${{ github.ref_name }}
+          body: "For more details, see the [CHANGELOG.md](CHANGELOG.md)."
           draft: false
           prerelease: false
