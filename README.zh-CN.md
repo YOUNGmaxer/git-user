@@ -9,9 +9,7 @@
 运行以下命令安装 `gu`：
 
 ```bash
-git clone https://github.com/YOUNGmaxer/git-user.git
-cd git-user
-sh ./install.sh
+curl -sSL https://raw.githubusercontent.com/YOUNGmaxer/git-user/main/install.sh | bash
 ```
 
 ## 使用

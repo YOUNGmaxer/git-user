@@ -9,9 +9,7 @@ English | [中文](./README.zh-CN.md)
 Run the following commands to install `gu`:
 
 ```bash
-git clone https://github.com/YOUNGmaxer/git-user.git
-cd git-user
-sh ./install.sh
+curl -sSL https://raw.githubusercontent.com/YOUNGmaxer/git-user/main/install.sh | bash
 ```
 
 ## Usage
