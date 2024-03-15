@@ -30,7 +30,7 @@ set_user_info() {
 show_user_info() {
   name=$(git config user.name)
   email=$(git config user.email)
-  echo "Current user information: Name: $name, Email: $email"
+  echo $(highlight_text "Name: $name, Email: $email")
 }
 
 add_user_profile() {
