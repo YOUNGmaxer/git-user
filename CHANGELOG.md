@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.3.0
+
+- 优化 show 命令展示
+
 ## 0.2.5
 
 - 调整 Assets 产物
