@@ -24,13 +24,6 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
-      - uses: actions/upload-artifact@v3
-        with:
-          name: git-user
-          path: |
-            git-user.sh
-            install.sh
-
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -42,3 +35,13 @@ jobs:
           body: "For more details, see the [CHANGELOG.md](CHANGELOG.md)."
           draft: false
           prerelease: false
+
+      - name: Upload git-user.sh
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./git-user.sh
+          asset_name: git-user
+          asset_content_type: text/x-sh
