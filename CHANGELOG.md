@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.2.5
+
+- 调整 Assets 产物
+
 ## 0.2.4
 
 - 调整 Assets 产物
