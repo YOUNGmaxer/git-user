@@ -9,6 +9,9 @@ TARGET_CMD="gu"
 # Remote script location
 SCRIPT_URL="https://raw.githubusercontent.com/YOUNGmaxer/git-user/main/git-user.sh"
 
+# Configuration file location
+CONFIG_FILE="$HOME/.git_user_profiles"
+
 echo "Installing $TARGET_CMD"
 
 # Download the script using curl
@@ -35,6 +38,13 @@ sudo mv "$TARGET_CMD" "$TARGET_DIR/$TARGET_CMD" || {
 # Check if successfully installed
 if [ -f "$TARGET_DIR/$TARGET_CMD" ]; then
   echo "Installation successful. You can now use '$TARGET_CMD' command anywhere."
+
+  # Create the configuration file if it does not exist
+  if [ ! -f "$CONFIG_FILE" ]; then
+    touch "$CONFIG_FILE"
+  else
+    echo "Configuration file already exists at $CONFIG_FILE"
+  fi
 else
   echo "Installation failed."
 fi
